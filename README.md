@@ -8,10 +8,10 @@ Comprised of two parts:
 
 REST API:
 ```
-/entrez/nucleotide/summary?term=<search_term>&retmax=<retmax> - search for DNA info 
-/entrez/nucleotide/summary/<id> - view specific DNA info
-/entrez/protein/summary?term=<search_term>&retmax=<retmax> - search for protein info
-/entrez/protein/summary/<id> - view specific protein info
+/entrez/nucleotide?term=<search_term>&retmax=<retmax> - search for DNA info
+/entrez/nucleotide/<id> - view specific DNA info
+/entrez/protein?term=<search_term>&retmax=<retmax> - search for protein info
+/entrez/protein/<id> - view specific protein info
 /project - list/create project
 /project/<project_id> - view/create specific project
 /project/<project_id>/dna/<entrez_id> - view genbank dna data part of this project
