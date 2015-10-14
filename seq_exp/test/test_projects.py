@@ -6,14 +6,18 @@ import ast
 
 class ProjectsTestCase(unittest.TestCase):
     def setUp(self):
-        self.db_fd, seq_exp.app.config['DATABASE'] = tempfile.mkstemp()
-        seq_exp.app.config['TESTING'] = True
-        self.app = seq_exp.app.test_client()
-        seq_exp.PROJECTS = {}
+        realapp, db = seq_exp.setup_api_and_db('sqlite:///:memory:')
+        self.realapp = realapp
+        self.db = db
+        self.db.create_tables()
+        self.db_fd, self.realapp.config['DATABASE'] = tempfile.mkstemp()
+        self.realapp.config['TESTING'] = True
+        self.app = self.realapp.test_client()
 
     def tearDown(self):
+        self.db.close()
         os.close(self.db_fd)
-        os.unlink(seq_exp.app.config['DATABASE'])
+        os.unlink(self.realapp.config['DATABASE'])
 
     def literal_eval(self, rv):
         resp_str = rv.data.decode("utf-8")
