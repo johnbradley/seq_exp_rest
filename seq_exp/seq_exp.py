@@ -42,7 +42,7 @@ class ProjectList(Resource):
     def get(self):
         data = [proj.to_json() for proj in self.project_list.get_all()]
         cnt = len(data)
-        return {'count':cnt, 'data':data}
+        return {'items':data}, 201, {'Access-Control-Allow-Origin': '*'} 
 
     def post(self):
         args = request.values
@@ -97,8 +97,10 @@ class EntrezDownload(Resource):
         return {'result':ids + db + project_id}
 
 
+
+
 def setup_api_and_db(url):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="website")
     api = Api(app)
     mydb = DB(url=url)
     api.add_resource(ProjectList, '/projects',
