@@ -10,7 +10,6 @@ from seq_exp.db import DB, ProjectRecord, ProjectRecordList
 
 Entrez.email = os.environ['EMAIL']
 
-
 class Project(Resource):
     def __init__(self, db=None):
         self.project_list = ProjectRecordList(db)
@@ -18,12 +17,12 @@ class Project(Resource):
     def get(self, project_id):
         proj = self.project_list.get_one(project_id);
         if proj:
-            return proj.to_json()
+            return proj.to_json(), 200, {'Access-Control-Allow-Origin': '*'}
         abort(404, message="Project {} doesn't exist".format(project_id))
 
     def delete(self, project_id):
         self.project_list.delete_one(project_id)
-        return '', 204
+        return '', 204, {'Access-Control-Allow-Origin': '*'}
 
     def put(self, project_id):
         proj = self.project_list.get_one(project_id);
@@ -31,7 +30,7 @@ class Project(Resource):
             args = request.values
             proj.title = args['title']
             self.project_list.save(proj)
-            return proj.to_json(), 201
+            return proj.to_json(), 201, {'Access-Control-Allow-Origin': '*'}
         abort(404, message="Project {} doesn't exist".format(project_id))
 
 
@@ -42,7 +41,7 @@ class ProjectList(Resource):
     def get(self):
         data = [proj.to_json() for proj in self.project_list.get_all()]
         cnt = len(data)
-        return {'items':data}, 201, {'Access-Control-Allow-Origin': '*'} 
+        return {'items':data}, 201, {'Access-Control-Allow-Origin': '*'}
 
     def post(self):
         args = request.values
@@ -61,6 +60,8 @@ class EntrezSummary(Resource):
 
     def get_summary(self, db, args):
         term = str(args['term'])
+        if not term:
+            return {'total_cnt': 0, 'count': 0, 'data': []}, 200, {'Access-Control-Allow-Origin': '*'}
         retmax = 10
         retmax_str = args['retmax']
         if retmax_str:
@@ -72,7 +73,7 @@ class EntrezSummary(Resource):
         count = len(record["IdList"])
         handle = Entrez.esummary(db=db, id=gi_str)
         record = Entrez.read(handle)
-        return {'total_cnt': total_cnt, 'count': count, 'data': record}
+        return {'total_cnt': total_cnt, 'count': count, 'data': record}, 200, {'Access-Control-Allow-Origin': '*'}
 
 
 class EntrezDetail(Resource):
@@ -95,8 +96,6 @@ class EntrezDownload(Resource):
         db = request.values['db']
         #print(ids, project_id,)
         return {'result':ids + db + project_id}
-
-
 
 
 def setup_api_and_db(url):
